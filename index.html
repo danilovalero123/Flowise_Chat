@@ -1,38 +1,44 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FLOWISE CHAT</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Asistente Virtual</title>
     <style>
-        * {
+        *,
+        *::before,
+        *::after {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
+        html, body {
+            height: 100%;
+            height: 100dvh;
+            overflow: hidden;
+        }
+
         body {
-            background-color: #000000;
-            color: #ffffff;
+            background-color: #CFCFCF;
+            color: #4D5057;
             font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-size: 18px;
+            line-height: 1.6;
             display: flex;
             justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
+            align-items: stretch;
         }
 
         .main-container {
             width: 100%;
-            max-width: 700px;
-            height: 700px;
-            background-color: #000000;
-            border: 1px solid #00897B;
-            border-radius: 16px;
+            max-width: 750px;
+            height: 100%;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
-            animation: fadeIn 0.5s ease-out;
+            background-color: #FFFFFF;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+            animation: fadeIn 0.4s ease-out;
         }
 
         @keyframes fadeIn {
@@ -41,48 +47,51 @@
         }
 
         .header {
-            padding: 12px 24px;
-            border-bottom: 1px solid #00897B;
+            padding: 18px 28px;
+            background-color: #4D5057;
             text-align: center;
             flex-shrink: 0;
         }
 
         .header h1 {
-            color: #00897B;
-            font-size: 1rem;
+            color: #FFFFFF;
+            font-size: 1.25rem;
             font-weight: 600;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
+            letter-spacing: 0.03em;
         }
 
         #chat-container {
             flex: 1;
             min-height: 0;
+            display: flex;
+            flex-direction: column;
         }
 
         flowise-fullchatbot {
             display: block;
             width: 100%;
             height: 100%;
+            flex: 1;
+            min-height: 0;
         }
 
-        /* ── Scrollbar global (fuera del shadow DOM) ── */
+        /* ── Scrollbar ── */
         ::-webkit-scrollbar {
-            width: 6px;
+            width: 8px;
         }
         ::-webkit-scrollbar-track {
-            background: #000000;
+            background: #E0E0E0;
         }
         ::-webkit-scrollbar-thumb {
-            background: #00897B;
-            border-radius: 3px;
+            background: #4D5057;
+            border-radius: 4px;
         }
         * {
             scrollbar-width: thin;
-            scrollbar-color: #00897B #000000;
+            scrollbar-color: #4D5057 #E0E0E0;
         }
 
-        /* ── Intento de ocultar branding via CSS Parts ── */
+        /* ── Ocultar branding ── */
         flowise-fullchatbot::part(footer),
         flowise-fullchatbot::part(branding),
         flowise-fullchatbot::part(powered-by),
@@ -92,9 +101,13 @@
 
         @media (max-width: 600px) {
             .main-container {
-                height: calc(100vh - 40px);
                 max-width: 100%;
-                border-radius: 12px;
+            }
+            .header {
+                padding: 14px 20px;
+            }
+            .header h1 {
+                font-size: 1.1rem;
             }
         }
     </style>
@@ -102,7 +115,7 @@
 <body>
     <div class="main-container">
         <div class="header">
-            <h1>FLOWISE CHAT</h1>
+            <h1>Asistente Virtual</h1>
         </div>
         <div id="chat-container">
             <flowise-fullchatbot id="flowise-widget"></flowise-fullchatbot>
@@ -117,29 +130,28 @@
             apiHost: "http://localhost:3000",
             theme: {
                 chatWindow: {
-                    showTitle: true,
-                    title: "Flowise Chat",
-                    backgroundColor: "#000000",
-                    welcomeMessage: "¿En qué puedo ayudarte?",
+                    showTitle: false,
+                    backgroundColor: "#FFFFFF",
+                    welcomeMessage: "¡Hola! Soy su asistente virtual. ¿En qué puedo ayudarle con su negocio hoy?",
                     botMessage: {
-                        backgroundColor: "#1A1A1A",
-                        textColor: "#ffffff"
+                        backgroundColor: "#4E6E5D",
+                        textColor: "#FFFFFF"
                     },
                     userMessage: {
-                        backgroundColor: "#00897B",
-                        textColor: "#ffffff"
+                        backgroundColor: "#4DA167",
+                        textColor: "#FFFFFF"
                     },
                     textInput: {
-                        backgroundColor: "#000000",
-                        textColor: "#ffffff",
-                        sendButtonColor: "#00897B",
-                        placeholder: "Escribe tu duda aquí..."
+                        backgroundColor: "#FFFFFF",
+                        textColor: "#4D5057",
+                        sendButtonColor: "#3BC14A",
+                        placeholder: "Escriba su consulta aquí..."
                     }
                 }
             }
         })
 
-        /* ── Inyecta scrollbar esmeralda + oculta "Powered by Flowise" dentro del shadow DOM ── */
+        /* ── Inyecta estilos en el shadow DOM ── */
         customElements.whenDefined("flowise-fullchatbot").then(() => {
             const widget = document.getElementById("flowise-widget")
             if (!widget) return
@@ -151,12 +163,111 @@
                 }
                 const style = document.createElement("style")
                 style.textContent = `
-                    ::-webkit-scrollbar { width: 6px; }
-                    ::-webkit-scrollbar-track { background: #000000; }
-                    ::-webkit-scrollbar-thumb { background: #00897B; border-radius: 3px; }
-                    * { scrollbar-width: thin; scrollbar-color: #00897B #000000; }
-                    [class*="powered"], [class*="footer"], [class*="branding"] { display: none !important; }
-                    [id*="powered"], [id*="footer"], [id*="branding"] { display: none !important; }
+                    * {
+                        font-size: 18px !important;
+                        line-height: 1.6 !important;
+                    }
+
+                    /* Scrollbar */
+                    ::-webkit-scrollbar { width: 8px; }
+                    ::-webkit-scrollbar-track { background: #E0E0E0; }
+                    ::-webkit-scrollbar-thumb { background: #4D5057; border-radius: 4px; }
+                    * { scrollbar-width: thin; scrollbar-color: #4D5057 #E0E0E0; }
+
+                    /* Burbujas: redondeadas + sombra suave */
+                    [class*="message"],
+                    [class*="bubble"],
+                    [class*="chat-message"] {
+                        border-radius: 18px !important;
+                        box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+                        padding: 14px 20px !important;
+                    }
+
+                    /* Input: blanco + borde Charcoal grueso 2px */
+                    [class*="input"],
+                    [class*="textInput"],
+                    [class*="chat-input"],
+                    input[type="text"],
+                    textarea {
+                        background-color: #FFFFFF !important;
+                        border: 2px solid #4D5057 !important;
+                        border-radius: 14px !important;
+                        font-size: 18px !important;
+                        padding: 14px 18px !important;
+                        color: #4D5057 !important;
+                    }
+
+                    [class*="input"]:focus-within,
+                    input[type="text"]:focus,
+                    textarea:focus {
+                        border-color: #3BC14A !important;
+                        outline: none !important;
+                    }
+
+                    /* Botón enviar: Jade Green grande */
+                    [class*="send"],
+                    [class*="sendButton"],
+                    button[class*="send"],
+                    [class*="chat-input"] button {
+                        background-color: #3BC14A !important;
+                        border-radius: 14px !important;
+                        padding: 14px 20px !important;
+                        min-width: 56px !important;
+                        min-height: 56px !important;
+                        border: none !important;
+                        cursor: pointer !important;
+                        display: flex !important;
+                        align-items: center !important;
+                        justify-content: center !important;
+                    }
+
+                    [class*="send"]:hover,
+                    button[class*="send"]:hover {
+                        background-color: #2E9E3E !important;
+                    }
+
+                    /* Icono flecha: blanco puro y grande */
+                    button svg,
+                    button svg *,
+                    [class*="send"] svg,
+                    [class*="send"] svg *,
+                    button path,
+                    button line,
+                    button polygon,
+                    button circle,
+                    button rect,
+                    [class*="send"] path,
+                    [class*="send"] line,
+                    [class*="send"] polygon,
+                    [class*="send"] circle,
+                    [class*="send"] rect {
+                        fill: #FFFFFF !important;
+                        stroke: #FFFFFF !important;
+                    }
+
+                    button svg,
+                    [class*="send"] svg {
+                        width: 24px !important;
+                        height: 24px !important;
+                    }
+
+                    /* Ocultar branding */
+                    [class*="powered"],
+                    [class*="footer"],
+                    [class*="branding"],
+                    [id*="powered"],
+                    [id*="footer"],
+                    [id*="branding"] {
+                        display: none !important;
+                    }
+
+                    /* Área de mensajes */
+                    [class*="messages"],
+                    [class*="chat-messages"],
+                    [class*="conversation"] {
+                        background-color: #FAFAFA !important;
+                        padding: 16px !important;
+                    }
                 `
                 widget.shadowRoot.prepend(style)
             }
