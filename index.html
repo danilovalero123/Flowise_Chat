@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FLOWISE CHAT</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .main-container {
+            width: 100%;
+            max-width: 700px;
+            height: 700px;
+            background-color: #000000;
+            border: 1px solid #00897B;
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+
+        .header {
+            padding: 12px 24px;
+            border-bottom: 1px solid #00897B;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .header h1 {
+            color: #00897B;
+            font-size: 1rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        #chat-container {
+            flex: 1;
+            min-height: 0;
+        }
+
+        flowise-fullchatbot {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* ── Scrollbar global (fuera del shadow DOM) ── */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #000000;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #00897B;
+            border-radius: 3px;
+        }
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: #00897B #000000;
+        }
+
+        /* ── Intento de ocultar branding via CSS Parts ── */
+        flowise-fullchatbot::part(footer),
+        flowise-fullchatbot::part(branding),
+        flowise-fullchatbot::part(powered-by),
+        flowise-fullchatbot::part(poweredBy) {
+            display: none !important;
+        }
+
+        @media (max-width: 600px) {
+            .main-container {
+                height: calc(100vh - 40px);
+                max-width: 100%;
+                border-radius: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="header">
+            <h1>FLOWISE CHAT</h1>
+        </div>
+        <div id="chat-container">
+            <flowise-fullchatbot id="flowise-widget"></flowise-fullchatbot>
+        </div>
+    </div>
+
+    <script type="module">
+        import Chatbot from "https://cdn.jsdelivr.net/npm/flowise-embed/dist/web.js"
+
+        Chatbot.initFull({
+            chatflowid: "cc1a11c4-eefe-4e32-8eea-916dcf1fb6fb",
+            apiHost: "http://localhost:3000",
+            theme: {
+                chatWindow: {
+                    showTitle: true,
+                    title: "Flowise Chat",
+                    backgroundColor: "#000000",
+                    welcomeMessage: "¿En qué puedo ayudarte?",
+                    botMessage: {
+                        backgroundColor: "#1A1A1A",
+                        textColor: "#ffffff"
+                    },
+                    userMessage: {
+                        backgroundColor: "#00897B",
+                        textColor: "#ffffff"
+                    },
+                    textInput: {
+                        backgroundColor: "#000000",
+                        textColor: "#ffffff",
+                        sendButtonColor: "#00897B",
+                        placeholder: "Escribe tu duda aquí..."
+                    }
+                }
+            }
+        })
+
+        /* ── Inyecta scrollbar esmeralda + oculta "Powered by Flowise" dentro del shadow DOM ── */
+        customElements.whenDefined("flowise-fullchatbot").then(() => {
+            const widget = document.getElementById("flowise-widget")
+            if (!widget) return
+
+            const inject = () => {
+                if (!widget.shadowRoot) {
+                    requestAnimationFrame(inject)
+                    return
+                }
+                const style = document.createElement("style")
+                style.textContent = `
+                    ::-webkit-scrollbar { width: 6px; }
+                    ::-webkit-scrollbar-track { background: #000000; }
+                    ::-webkit-scrollbar-thumb { background: #00897B; border-radius: 3px; }
+                    * { scrollbar-width: thin; scrollbar-color: #00897B #000000; }
+                    [class*="powered"], [class*="footer"], [class*="branding"] { display: none !important; }
+                    [id*="powered"], [id*="footer"], [id*="branding"] { display: none !important; }
+                `
+                widget.shadowRoot.prepend(style)
+            }
+            requestAnimationFrame(inject)
+        })
+    </script>
+</body>
+</html>
